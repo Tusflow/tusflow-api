@@ -1,5 +1,5 @@
 export const SECURITY_CONFIG = {
-    ALLOWED_ORIGINS: ['*'],
+    ALLOWED_ORIGINS: [''],
     ALLOWED_METHODS: ['GET', 'POST', 'PATCH', 'HEAD', 'DELETE', 'OPTIONS'],
     ALLOWED_HEADERS: [
         'Content-Type',

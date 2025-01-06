@@ -33,15 +33,9 @@ npm install
 
 ## Configuration
 
-1. Copy `wrangler.example.toml` to `wrangler.toml`:
+1. Configure your `wrangler.toml` with appropriate values
 
-```bash
-cp wrangler.example.toml wrangler.toml
-```
-
-2. Configure your `wrangler.toml` with appropriate values
-
-3. Set up your secrets using wrangler:
+2. Set up your secrets using wrangler:
 
 ```bash
 wrangler secret put AWS_ACCESS_KEY_ID
@@ -51,7 +45,7 @@ wrangler secret put UPSTASH_REDIS_REST_TOKEN
 wrangler secret put INTERNAL_API_KEY
 ```
 
-4. Optional: Configure additional settings in `src/config/constants.ts`
+4. Optional: Configure additional settings in `src/config`
 
 ## Development
 
@@ -59,8 +53,6 @@ wrangler secret put INTERNAL_API_KEY
 # Start development server
 bun run dev
 
-# Run tests
-bun test
 
 # Deploy to Cloudflare Workers
 bun run deploy

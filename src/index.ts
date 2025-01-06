@@ -26,8 +26,7 @@ app.use(logger());
 // Security middleware
 app.use('*', securityMiddleware);
 
-// Cache middleware
-app.use('*', cacheMiddleware);
+
 
 // Validate file upload
 app.use('*', validateFileUpload());
