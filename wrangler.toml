@@ -1,0 +1,23 @@
+name = "tusflow-api"
+main = "src/index.ts"
+compatibility_flags = [ "nodejs_compat" ]
+compatibility_date = "2024-09-23"
+
+[vars]
+AWS_REGION = ""
+AWS_ACCESS_KEY_ID = ""
+AWS_SECRET_ACCESS_KEY = ""
+AWS_ENDPOINT = ""
+AWS_BUCKET_NAME = ""
+UPSTASH_REDIS_REST_URL = ""
+UPSTASH_REDIS_REST_TOKEN = ""
+UNKEY_API_ID = ""
+INTERNAL_API_KEY = ""
+
+
+[observability]
+enabled = true
+
+
+[triggers]
+crons = ["0 0 * * *"]  # Runs daily at midnight UTC

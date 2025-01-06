@@ -1,2 +1,2 @@
-export * from './checkRedisHealth';
-export * from './checkS3Health';
+export * from "./checkRedisHealth";
+export * from "./checkS3Health";

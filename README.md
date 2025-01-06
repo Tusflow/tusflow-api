@@ -1,3 +1,4 @@
+
 # TusFlow API
 
 A high-performance, scalable implementation of the TUS resumable upload protocol using Cloudflare Workers. This API allows for reliable file uploads with support for resumption, chunking, and progress tracking.
@@ -94,3 +95,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Cloudflare Workers](https://workers.cloudflare.com/)
 - [Hono](https://hono.dev/)
 - [Upstash Redis](https://upstash.com/)
+
+[![Formatted with Biome](https://img.shields.io/badge/Formatted_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev/)
+[![Linted with Biome](https://img.shields.io/badge/Linted_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)
+[![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)

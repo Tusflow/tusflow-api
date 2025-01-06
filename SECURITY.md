@@ -46,7 +46,7 @@ This project implements several security measures:
 If you discover a security vulnerability within this project, please follow these steps:
 
 1. **DO NOT** disclose the vulnerability publicly
-2. Send a detailed report to [security@yourdomain.com]
+2. Send a detailed report to [tusflow@gmail.com]
 3. Include:
     - Description of the vulnerability
     - Steps to reproduce

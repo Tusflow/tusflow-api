@@ -55,5 +55,3 @@ bun.lockb
 *.temp
 .DS_Store
 Thumbs.db
-
-wrangler.toml

@@ -1,45 +1,45 @@
-import { ERROR_MESSAGES } from '@/config';
-import type { UploadMetadata } from '@/types/uploadTypes';
-import { retryOperation } from '@/utils/other/retryOperation';
-import { type Redis } from '@upstash/redis/cloudflare';
-import { type Context } from 'hono';
+import { ERROR_MESSAGES } from "@/config";
+import type { UploadMetadata } from "@/types/uploadTypes";
+import { retryOperation } from "@/utils/other/retryOperation";
+import type { Redis } from "@upstash/redis/cloudflare";
+import type { Context } from "hono";
 
 export async function handleGetRequest(
-    c: Context,
-    redis: Redis,
-    uploadId: string,
-    baseHeaders: Record<string, string>
+	c: Context,
+	redis: Redis,
+	uploadId: string,
+	baseHeaders: Record<string, string>,
 ): Promise<Response> {
-    // Track access for this upload
+	// Track access for this upload
 
-    const cachedMetadata = await retryOperation(
-        () => redis.get<UploadMetadata>(`upload:${uploadId}`),
-        ERROR_MESSAGES.REDIS.OPERATION_FAILED
-    );
+	const cachedMetadata = await retryOperation(
+		() => redis.get<UploadMetadata>(`upload:${uploadId}`),
+		ERROR_MESSAGES.REDIS.OPERATION_FAILED,
+	);
 
-    if (!cachedMetadata) {
-        return new Response('Upload not found', { status: 404 });
-    }
+	if (!cachedMetadata) {
+		return new Response("Upload not found", { status: 404 });
+	}
 
-    const totalSize = parseInt(cachedMetadata.length);
-    const uploadedSize = parseInt(cachedMetadata.offset);
-    const progress = (uploadedSize / totalSize) * 100;
+	const totalSize = Number.parseInt(cachedMetadata.length);
+	const uploadedSize = Number.parseInt(cachedMetadata.offset);
+	const progress = (uploadedSize / totalSize) * 100;
 
-    return new Response(
-        JSON.stringify({
-            uploadId,
-            totalSize,
-            uploadedSize,
-            progress: progress.toFixed(2),
-            chunkSize: cachedMetadata.chunkSize,
-            networkSpeed: cachedMetadata.networkSpeed,
-            uploadedChunks: cachedMetadata.uploadedChunks,
-        }),
-        {
-            headers: {
-                ...baseHeaders,
-                'Content-Type': 'application/json',
-            },
-        }
-    );
+	return new Response(
+		JSON.stringify({
+			uploadId,
+			totalSize,
+			uploadedSize,
+			progress: progress.toFixed(2),
+			chunkSize: cachedMetadata.chunkSize,
+			networkSpeed: cachedMetadata.networkSpeed,
+			uploadedChunks: cachedMetadata.uploadedChunks,
+		}),
+		{
+			headers: {
+				...baseHeaders,
+				"Content-Type": "application/json",
+			},
+		},
+	);
 }
