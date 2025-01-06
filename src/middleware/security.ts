@@ -57,7 +57,7 @@ const rateLimitMiddleware = createRateLimiter();
 
 // Create authentication middleware with public paths excluded
 const authMiddleware = authentication({
-    excludePaths: ['/health'], // Add your public paths here
+    excludePaths: ['/health', '/_internal/cron/cleanup'], // Add your public paths here
 });
 
 // Combined security middleware that runs all security measures in sequence
