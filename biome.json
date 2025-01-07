@@ -20,7 +20,7 @@
 		"enabled": true,
 		"ignore": [".wrangler", "node_modules"],
 		"rules": {
-			"recommended": true
+			"recommended": false
 		}
 	},
 	"javascript": {

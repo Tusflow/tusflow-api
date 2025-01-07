@@ -1,14 +1,14 @@
+import path from "node:path";
 import { ERROR_MESSAGES, FILE_VALIDATION } from "@/config";
 import { ValidationError } from "@/utils/error/customErrors";
-import { type Context, type Next } from "hono";
-import path from "path";
+import type { Context, Next } from "hono";
 
 export const validateFileUpload = () => {
 	return async (c: Context, next: Next) => {
 		if (c.req.method === "POST") {
 			const metadata = c.req.header("Upload-Metadata");
 			const uploadLength = c.req.header("Upload-Length");
-			const fileSize = uploadLength ? parseInt(uploadLength) : null;
+			const fileSize = uploadLength ? Number.parseInt(uploadLength) : null;
 
 			// Parse metadata to get filename
 			if (metadata) {
@@ -21,7 +21,7 @@ export const validateFileUpload = () => {
 					{} as Record<string, string>,
 				);
 
-				const filename = metadataPairs["filename"];
+				const filename = metadataPairs.filename;
 
 				// Validate file type if enabled
 				if (FILE_VALIDATION.ENABLE_TYPE_VALIDATION && filename) {
