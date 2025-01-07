@@ -7,6 +7,8 @@ export const ERROR_MESSAGES = {
 		CHECKSUM_MISMATCH: "Checksum verification failed",
 		PART_NUMBER_MISSING: "Part number missing",
 		TIMEOUT: "Request timed out",
+		INVALID_CONTENT_TYPE: "Invalid Content-Type",
+		EMPTY_CHUNK: "Empty chunk",
 	},
 	S3: {
 		MULTIPART_INIT_FAILED: "Failed to initialize multipart upload",
@@ -28,5 +30,8 @@ export const ERROR_MESSAGES = {
 		INVALID_FILE_TYPE: "Invalid file type",
 		FILE_SIZE_EXCEEDED: "File size exceeded",
 		FILE_SIZE_BELOW: "File size below minimum limit",
+	},
+	AUTH: {
+		SERVER_ERROR: "Server configuration error",
 	},
 };

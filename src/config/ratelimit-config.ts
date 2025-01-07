@@ -1,5 +1,5 @@
 export const RATE_LIMIT = {
-	ENABLE: false,
+	ENABLE: true,
 	KEY_PREFIX: "ratelimit:",
 	BLOCK_DURATION: 60 * 60, // 1 hour
 	// Different limits for different endpoints

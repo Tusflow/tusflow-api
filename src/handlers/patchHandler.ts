@@ -19,7 +19,7 @@ export async function handlePatchRequest(
 	// Validate content type
 	const contentType = c.req.header("Content-Type");
 	if (contentType !== "application/offset+octet-stream") {
-		return new Response("Invalid Content-Type", {
+		return new Response(ERROR_MESSAGES.UPLOAD.INVALID_CONTENT_TYPE, {
 			status: 415,
 			headers: {
 				...baseHeaders,
@@ -35,7 +35,7 @@ export async function handlePatchRequest(
 	);
 
 	if (!metadata) {
-		return new Response("Upload not found", {
+		return new Response(ERROR_MESSAGES.UPLOAD.NOT_FOUND, {
 			status: 404,
 			headers: baseHeaders,
 		});
@@ -68,7 +68,7 @@ export async function handlePatchRequest(
 		const chunkSize = chunk.byteLength;
 
 		if (chunkSize === 0) {
-			return new Response("Empty chunk", {
+			return new Response(ERROR_MESSAGES.UPLOAD.EMPTY_CHUNK, {
 				status: 400,
 				headers: {
 					...baseHeaders,
@@ -82,7 +82,7 @@ export async function handlePatchRequest(
 		if (uploadChecksum) {
 			const isValid = await verifyChecksum(chunk, uploadChecksum, "SHA-256");
 			if (!isValid) {
-				return new Response("Checksum verification failed", {
+				return new Response(ERROR_MESSAGES.UPLOAD.CHECKSUM_MISMATCH, {
 					status: 460,
 				});
 			}
@@ -128,7 +128,7 @@ export async function handlePatchRequest(
 						}),
 					);
 				} catch (abortError) {
-					console.error("Failed to abort multipart upload:", abortError);
+					console.error(ERROR_MESSAGES.S3.ABORT_MULTIPART_FAILED, abortError);
 				}
 			}
 		}

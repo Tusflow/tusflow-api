@@ -42,7 +42,6 @@ export async function handlePostRequest(
 	// Parse metadata
 	const parsedMetadata: Record<string, string> = {};
 	if (uploadMetadata) {
-		// biome-ignore lint/complexity/noForEach: <explanation>
 		uploadMetadata.split(",").forEach((item: string) => {
 			const [key, value] = item.trim().split(" ");
 			if (key && value) {
@@ -63,7 +62,6 @@ export async function handlePostRequest(
 		} else if (type === "final" && parts) {
 			parsedMetadata["Upload-Concat"] = uploadConcat;
 			// For final uploads, we don't need upload length
-			// biome-ignore lint/performance/noDelete: <explanation>
 			delete parsedMetadata["Upload-Length"];
 		}
 	}
@@ -134,7 +132,6 @@ export async function handlePostRequest(
 
 		const creationWithUpload =
 			c.req.header("Content-Length") &&
-			// biome-ignore lint/style/noNonNullAssertion: <explanation>
 			Number.parseInt(c.req.header("Content-Length")!) > 0;
 
 		if (creationWithUpload) {

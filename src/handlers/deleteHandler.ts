@@ -21,7 +21,7 @@ export async function handleDeleteRequest(
 	);
 
 	if (!metadata) {
-		return new Response("Upload not found", {
+		return new Response(ERROR_MESSAGES.UPLOAD.NOT_FOUND, {
 			status: 404,
 			headers: baseHeaders,
 		});

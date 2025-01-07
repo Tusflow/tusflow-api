@@ -8,17 +8,13 @@ export async function handleHeadRequest(
 	uploadId: string,
 	baseHeaders: Record<string, string>,
 ) {
-	console.log(
-		`[${new Date().toISOString()}] Handling HEAD request for upload ${uploadId}`,
-	);
-
 	const metadata = await retryOperation(
 		() => redis.get<UploadMetadata>(`upload:${uploadId}`),
 		ERROR_MESSAGES.REDIS.OPERATION_FAILED,
 	);
 
 	if (!metadata) {
-		return new Response("Upload not found", {
+		return new Response(ERROR_MESSAGES.UPLOAD.NOT_FOUND, {
 			status: 404,
 			headers: baseHeaders,
 		});

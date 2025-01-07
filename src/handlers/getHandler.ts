@@ -18,7 +18,7 @@ export async function handleGetRequest(
 	);
 
 	if (!cachedMetadata) {
-		return new Response("Upload not found", { status: 404 });
+		return new Response(ERROR_MESSAGES.UPLOAD.NOT_FOUND, { status: 404 });
 	}
 
 	const totalSize = Number.parseInt(cachedMetadata.length);
