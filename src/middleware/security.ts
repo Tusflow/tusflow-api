@@ -9,62 +9,63 @@ import { createRateLimiter } from "./ratelimit";
 
 // Individual middleware definitions
 const secureHeadersMiddleware = secureHeaders({
-	strictTransportSecurity: "max-age=31536000; includeSubDomains",
-	contentSecurityPolicy: {
-		defaultSrc: ["'self'"],
-		scriptSrc: ["'self'"],
-		styleSrc: ["'self'"],
-		imgSrc: ["'self'", "data:"],
-		fontSrc: ["'self'"],
-		objectSrc: ["'none'"],
-		frameAncestors: ["'none'"],
-	},
-	permissionsPolicy: {
-		accelerometer: [],
-		camera: [],
-		geolocation: [],
-		gyroscope: [],
-		magnetometer: [],
-		microphone: [],
-		payment: [],
-		usb: [],
-	},
-	crossOriginEmbedderPolicy: true,
-	crossOriginOpenerPolicy: true,
-	crossOriginResourcePolicy: true,
-	referrerPolicy: "strict-origin-when-cross-origin",
+  strictTransportSecurity: "max-age=31536000; includeSubDomains",
+  contentSecurityPolicy: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'"],
+    styleSrc: ["'self'"],
+    imgSrc: ["'self'", "data:"],
+    fontSrc: ["'self'"],
+    objectSrc: ["'none'"],
+    frameAncestors: ["'none'"],
+  },
+  permissionsPolicy: {
+    accelerometer: [],
+    camera: [],
+    geolocation: [],
+    gyroscope: [],
+    magnetometer: [],
+    microphone: [],
+    payment: [],
+    usb: [],
+  },
+  crossOriginEmbedderPolicy: true,
+  crossOriginOpenerPolicy: true,
+  crossOriginResourcePolicy: true,
+  referrerPolicy: "strict-origin-when-cross-origin",
 });
 
 const corsMiddleware = cors({
-	origin: (origin) => {
-		const ALLOWED_ORIGINS = SECURITY_CONFIG.ALLOWED_ORIGINS;
-		return ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-	},
-	allowMethods: SECURITY_CONFIG.ALLOWED_METHODS,
-	allowHeaders: SECURITY_CONFIG.ALLOWED_HEADERS,
-	exposeHeaders: SECURITY_CONFIG.EXPOSE_HEADERS,
-	credentials: SECURITY_CONFIG.CREDENTIALS,
+  origin: (origin) => {
+    const ALLOWED_ORIGINS = SECURITY_CONFIG.ALLOWED_ORIGINS;
+    return ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  },
+  allowMethods: SECURITY_CONFIG.ALLOWED_METHODS,
+  allowHeaders: SECURITY_CONFIG.ALLOWED_HEADERS,
+  exposeHeaders: SECURITY_CONFIG.EXPOSE_HEADERS,
+  credentials: SECURITY_CONFIG.CREDENTIALS,
 });
 
 const csrfProtectionMiddleware = csrf({
-	origin: (origin) => {
-		const ALLOWED_ORIGINS = SECURITY_CONFIG.ALLOWED_ORIGINS;
-		return ALLOWED_ORIGINS.includes(origin);
-	},
+  origin: (origin) => {
+    const ALLOWED_ORIGINS = SECURITY_CONFIG.ALLOWED_ORIGINS;
+    return ALLOWED_ORIGINS.includes(origin);
+  },
 });
 
 const rateLimitMiddleware = createRateLimiter();
 
 // Create authentication middleware with public paths excluded
 const authMiddleware = authentication({
-	excludePaths: ["/health", "/_internal/cron/cleanup"], // Add your public paths here
+  excludePaths: SECURITY_CONFIG.AUTHENTICATION.excludePaths,
+  enabled: SECURITY_CONFIG.AUTHENTICATION.enabled,
 });
 
 // Combined security middleware that runs all security measures in sequence
 export const securityMiddleware = every(
-	secureHeadersMiddleware,
-	corsMiddleware,
-	authMiddleware,
-	csrfProtectionMiddleware,
-	rateLimitMiddleware,
+  secureHeadersMiddleware,
+  corsMiddleware,
+  authMiddleware,
+  csrfProtectionMiddleware,
+  rateLimitMiddleware
 );
