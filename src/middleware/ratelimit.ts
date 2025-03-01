@@ -1,64 +1,77 @@
 import { ERROR_MESSAGES, RATE_LIMIT } from "@/config";
-import { ValidationError } from "@/utils/error/customErrors";
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis/cloudflare";
+import { Ratelimit } from "@unkey/ratelimit";
 import type { Context, Next } from "hono";
+import type { Bindings } from "@/types/honoTypes";
 import { env } from "hono/adapter";
 
-export const createRateLimiter = () => {
-	return async (c: Context, next: Next) => {
-		if (!RATE_LIMIT.ENABLE) {
-			return next();
-		}
+export const RateLimiter = () => {
+  return async (c: Context, next: Next) => {
+    if (!RATE_LIMIT.ENABLE) {
+      return next();
+    }
 
-		const { UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN } = env<{
-			UPSTASH_REDIS_REST_URL: string;
-			UPSTASH_REDIS_REST_TOKEN: string;
-		}>(c);
+    const { UNKEY_ROOT_KEY } = env<Bindings>(c);
 
-		const redis = new Redis({
-			url: UPSTASH_REDIS_REST_URL,
-			token: UPSTASH_REDIS_REST_TOKEN,
-		});
+    const identifier = c.req.header("CF-Connecting-IP") || "unknown";
+    const method = c.req.method;
 
-		const identifier = c.req.header("CF-Connecting-IP") || "unknown";
-		const method = c.req.method;
+    const fallback = (identifier: string) => ({
+      success: true,
+      limit: 0,
+      reset: 0,
+      remaining: 0,
+    });
 
-		// Get rate limit config based on HTTP method
-		const limitConfig =
-			RATE_LIMIT.LIMITS[method as keyof typeof RATE_LIMIT.LIMITS] ||
-			RATE_LIMIT.LIMITS.DEFAULT;
+    // Get rate limit config based on HTTP method
+    const limitConfig =
+      RATE_LIMIT.LIMITS[method as keyof typeof RATE_LIMIT.LIMITS] ||
+      RATE_LIMIT.LIMITS.DEFAULT;
 
-		const ratelimit = new Ratelimit({
-			redis,
-			prefix: RATE_LIMIT.KEY_PREFIX,
-			limiter: Ratelimit.slidingWindow(
-				limitConfig.tokens,
-				`${limitConfig.interval} s`,
-			),
-		});
+    const ratelimit = new Ratelimit({
+      rootKey: UNKEY_ROOT_KEY,
+      namespace: RATE_LIMIT.NAMESPACE,
+      limit: limitConfig.tokens,
+      duration: `${limitConfig.interval} s`,
+      async: true,
+      timeout: {
+        ms: 3000, // only wait 3s at most before returning the fallback
+        fallback,
+      },
+      onError: (err, identifier) => {
+        console.error(`${identifier}:${method} - ${err.message}`);
+        return fallback(`${identifier}:${method}`);
+      },
+    });
 
-		const { success, limit, reset, remaining } = await ratelimit.limit(
-			`${identifier}:${method}`,
-		);
+    try {
+      const { success, limit, reset, remaining } = await ratelimit.limit(
+        `${identifier}:${method}`
+      );
 
-		// Set rate limit headers
-		c.header("X-RateLimit-Limit", limit.toString());
-		c.header("X-RateLimit-Remaining", remaining.toString());
-		c.header("X-RateLimit-Reset", reset.toString());
+      // Set rate limit headers
+      c.header("X-RateLimit-Limit", limit.toString());
+      c.header("X-RateLimit-Remaining", remaining.toString());
+      c.header("X-RateLimit-Reset", reset.toString());
 
-		if (!success) {
-			throw new ValidationError(ERROR_MESSAGES.RATE_LIMIT.LIMIT_EXCEEDED, {
-				statusCode: 429,
-				errorCode: "RATE_LIMIT_EXCEEDED",
-				details: {
-					limit,
-					reset,
-					retryAfter: Math.ceil((reset - Date.now()) / 1000),
-				},
-			});
-		}
+      if (!success) {
+        return c.json(
+          {
+            error: ERROR_MESSAGES.RATE_LIMIT.LIMIT_EXCEEDED,
+            code: "RATE_LIMIT_EXCEEDED",
+            details: {
+              limit,
+              reset,
+              retryAfter: Math.ceil((reset - Date.now()) / 1000),
+            },
+          },
+          429
+        );
+      }
 
-		await next();
-	};
+      await next();
+    } catch (error) {
+      console.error("Rate limiter error:", error);
+      return c.json({ error: "Rate limiting service error" }, 500);
+    }
+  };
 };

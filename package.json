@@ -11,6 +11,7 @@
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.0.0",
 		"@unkey/hono": "^1.4.10",
+		"@unkey/ratelimit": "^0.5.5",
 		"@upstash/ratelimit": "^2.0.5",
 		"@upstash/redis": "^1.28.4",
 		"hono": "^4.6.16"

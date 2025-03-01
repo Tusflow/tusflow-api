@@ -1,5 +1,5 @@
 import * as crypto from "node:crypto";
-import { ERROR_MESSAGES, UPLOAD_CONFIG } from "@/config";
+import { ERROR_MESSAGES, TUS_CONFIG, UPLOAD_CONFIG } from "@/config";
 import type { UploadMetadata } from "@/types/uploadTypes";
 import { retryOperation } from "@/utils/other/retryOperation";
 import { calculateOptimalChunkSize } from "@/utils/upload/uploadUtils";
@@ -66,12 +66,12 @@ export async function handlePostRequest(
 		}
 	}
 
+	// generate new upload id
 	const newUploadId = crypto.randomUUID();
 	const contentLength = uploadLength ? Number.parseInt(uploadLength) : 0;
 
 	// Validate max size
-	if (contentLength > 1073741824) {
-		// 1GB max size
+	if (contentLength > TUS_CONFIG.MAX_SIZE) {
 		return new Response("File too large", {
 			status: 413,
 			headers: {

@@ -5,35 +5,10 @@ import { csrf } from "hono/csrf";
 import { secureHeaders } from "hono/secure-headers";
 
 import { authentication } from "./authentication";
-import { createRateLimiter } from "./ratelimit";
+import { RateLimiter } from "./ratelimit";
 
 // Individual middleware definitions
-const secureHeadersMiddleware = secureHeaders({
-  strictTransportSecurity: "max-age=31536000; includeSubDomains",
-  contentSecurityPolicy: {
-    defaultSrc: ["'self'"],
-    scriptSrc: ["'self'"],
-    styleSrc: ["'self'"],
-    imgSrc: ["'self'", "data:"],
-    fontSrc: ["'self'"],
-    objectSrc: ["'none'"],
-    frameAncestors: ["'none'"],
-  },
-  permissionsPolicy: {
-    accelerometer: [],
-    camera: [],
-    geolocation: [],
-    gyroscope: [],
-    magnetometer: [],
-    microphone: [],
-    payment: [],
-    usb: [],
-  },
-  crossOriginEmbedderPolicy: true,
-  crossOriginOpenerPolicy: true,
-  crossOriginResourcePolicy: true,
-  referrerPolicy: "strict-origin-when-cross-origin",
-});
+const secureHeadersMiddleware = secureHeaders();
 
 const corsMiddleware = cors({
   origin: (origin) => {
@@ -53,7 +28,7 @@ const csrfProtectionMiddleware = csrf({
   },
 });
 
-const rateLimitMiddleware = createRateLimiter();
+const rateLimitMiddleware = RateLimiter();
 
 // Create authentication middleware with public paths excluded
 const authMiddleware = authentication({

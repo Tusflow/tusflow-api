@@ -1,5 +1,5 @@
 import { ERROR_MESSAGES } from "@/config";
-import type { Env } from "@/types/honoTypes";
+import type { Bindings } from "@/types/honoTypes";
 import { type UnkeyContext, unkey } from "@unkey/hono";
 import type { Context, Next } from "hono";
 import { env } from "hono/adapter";
@@ -37,7 +37,7 @@ export function authentication(config: AuthConfig = {}) {
     }
 
     // Verify Unkey API ID exists
-    const { UNKEY_API_ID } = env<Env>(c);
+    const { UNKEY_API_ID } = env<Bindings>(c);
     if (!UNKEY_API_ID) {
       return new Response(ERROR_MESSAGES.AUTH.SERVER_ERROR, { status: 500 });
     }
