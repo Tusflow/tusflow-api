@@ -34,6 +34,7 @@ tsconfig.tsbuildinfo
 
 # Editor directories and files
 .vscode/*
+.cursor/*
 !.vscode/extensions.json
 !.vscode/settings.json
 .idea
